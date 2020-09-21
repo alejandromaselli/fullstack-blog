@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const bodyParser = require('body-parser')
+
 const app = express();
 
 const { config, engine } = require('express-edge');
@@ -12,6 +14,10 @@ app.use(express.static('public'));
 app.use(engine);
 
 app.set('views', `${__dirname}/views`);
+
+app.use(bodyParser.json())
+
+app.use(bodyParser.urlencoded({ extended: true }))
 
 /*==============================
 =            Routes            =
@@ -28,12 +34,24 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/post', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'pages/post.html'))
+    //res.sendFile(path.resolve(__dirname, 'pages/post.html'))
+    res.render('post')
 });
 
 app.get('/contact', (req, res) => {
     //res.sendFile(path.resolve(__dirname, 'pages/contact.html'))
     res.render('contact')
+});
+
+app.get('/posts/new', (req, res) => {
+    res.render('create')
+});
+
+app.post('/posts/store', (req, res) => {
+    
+    console.log(req.body);
+    
+    res.redirect('/');
 });
 
 /*=====  End of Routes  ======*/
@@ -47,7 +65,7 @@ app.listen(3001, () => {
 ===========================================*/
 
 mongoose.connect('mongodb://localhost:3000/node-js-blog', {useNewUrlParser: true, useUnifiedTopology: true},(err, obj) => {
-    console.log(err, obj);
+    console.log("Conexion exitosa");
 });
 
 /*=====  End of Mongoose connection  ======*/
